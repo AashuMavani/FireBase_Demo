@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FireBase_Demo</string>
+    <string name="Open_Drawer">Open_Drawer</string>
+    <string name="Close_Drawer">Close_Drawer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

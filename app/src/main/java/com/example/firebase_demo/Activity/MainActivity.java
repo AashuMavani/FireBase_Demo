@@ -1,4 +1,4 @@
-package com.example.firebase_demo;
+package com.example.firebase_demo.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -7,12 +7,14 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebase_demo.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -40,11 +42,14 @@ public class MainActivity extends AppCompatActivity {
     AppCompatEditText email,password,phone,otp;
     AppCompatButton btnPRegister,btnSignIn,btnGetOtp,btnRegister,btnSignOut;
     SignInButton signIn;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth; 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     private String mVerificationId;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
     private GoogleSignInClient googleSignInClient;
+    public  static SharedPreferences preferences;
+    public static SharedPreferences.Editor editor;
+    boolean Islogin=false;
 
 
     @Override
@@ -61,6 +66,18 @@ public class MainActivity extends AppCompatActivity {
         btnRegister=findViewById(R.id.btnRegister);
         btnSignOut=findViewById(R.id.btnSignOut);
         signIn=findViewById(R.id.sign_in_button);
+
+        preferences=getSharedPreferences("mavani",0);
+        editor=preferences.edit();
+       Islogin=preferences.getBoolean("loginstatus",false);
+
+      if (Islogin)
+      {
+          Intent intent=new Intent(MainActivity.this, ProfileActivity.class);
+          startActivity(intent);
+      }
+
+
         mAuth = FirebaseAuth.getInstance();
         Log.d("LLL", "onCreate: Who is Rgistered?  "+mAuth.getCurrentUser().getEmail());
         btnPRegister.setOnClickListener(v -> emailRegistrtation());
@@ -164,6 +181,11 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("LLL", "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            editor.putString("email",mAuth.getCurrentUser().getEmail());
+                            editor.putBoolean("loginstatus",true);
+                            editor.commit();
+                            Intent intent=new Intent(MainActivity.this, ProfileActivity.class);
+                            startActivity(intent);
                             //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -186,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("LLL", "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(MainActivity.this, "Registration", Toast.LENGTH_SHORT).show();
                             //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -221,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
             // When request code is equal to 100 initialize task
             Task<GoogleSignInAccount> signInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
