@@ -35,8 +35,6 @@ public class ProfileActivity extends AppCompatActivity {
     NavigationView navigation_View;
     ImageView header_img;
     TextView header_name,header_email;
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,18 +1,24 @@
 package com.example.firebase_demo.Fragment;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -27,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
@@ -34,82 +41,117 @@ import java.util.Random;
 
 public class Add_Product_Fragment extends Fragment {
 
+    AppCompatEditText pname,pprice,pdes;
+    ImageView pimg;
+    Button Addbutton,Updatebutton;
+    Uri resultUri;
     FirebaseDatabase database;
     DatabaseReference myRef;
-    ImageView imageView;
     FirebaseStorage storage;
-    StorageReference imgBucket;
 
-    @SuppressLint("WrongThread")
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_add__product_, container, false);
-        imageView = view.findViewById(R.id.imgView);
+
+        pname=view.findViewById(R.id.pname);
+        pprice=view.findViewById(R.id.pprice);
+        pdes=view.findViewById(R.id.pdes);
+        pimg=view.findViewById(R.id.pimg);
+        Addbutton=view.findViewById(R.id.Addbutton);
+        Updatebutton=view.findViewById(R.id.Updatebutton);
+
+
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Product").push();
         String id = myRef.getKey();
+
+
         Log.d("YYY", "onCreateView: Key=" + id);
         storage = FirebaseStorage.getInstance();
         String imgName = "Img_" + new Random().nextInt(10000) + ".jpg";
         StorageReference mainBucket = storage.getReference().child("ProductImages/" + imgName);
 
-        //StorageReference imgBucket = mainBucket.child("ProductImages/" + imgName);
+     pimg.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             CropImage.activity()
+                     .start(getContext(),Add_Product_Fragment.this);
+         }
+     });
+     Addbutton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             pimg.setDrawingCacheEnabled(true);
+             pimg.buildDrawingCache();
+             Bitmap bitmap = ((BitmapDrawable) pimg.getDrawable()).getBitmap();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+             byte[] data = baos.toByteArray();
+
+             UploadTask uploadTask = mainBucket.putBytes(data);
+             uploadTask.addOnFailureListener(new OnFailureListener() {
+                 @Override
+                 public void onFailure(@NonNull Exception exception) {
+                     // Handle unsuccessful uploads
+                 }
+             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                 @Override
+                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                     // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                     // ...
+                     Log.d("YYY", "onSuccess: Image Uploaded");
+
+                     UploadTask uploadTask = mainBucket.putBytes(data);
+                     uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+
+                         @Override
+                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                             taskSnapshot.getStorage().getDownloadUrl().addOnCompleteListener(
+                                     new OnCompleteListener<Uri>() {
+
+                                         @Override
+                                         public void onComplete(@NonNull Task<Uri> task) {
+                                             String fileLink = task.getResult().toString();
+                                             Log.d("YYY", "onComplete: url="+fileLink);
+                                             //next work with URL
+
+                                             Product_Data product_data = new Product_Data(id, pname.getText().toString(), pdes.getText().toString(), pprice.getText().toString(),fileLink);
+                                             myRef.setValue(product_data);
+
+                                         }
+                                     }).addOnFailureListener(new OnFailureListener() {
+                                 @Override
+                                 public void onFailure(@NonNull Exception e) {
+
+                                 }
+                             });
+                         }
+                     });
+                 }
+
+             });
 
 
-        // While the file names are the same, the references point to different files
-        //mainBucket.getName().equals(imgBucket.getName());    // true
-        // mainBucket.getPath().equals(imgBucket.getPath());    // false
+         }
+     });
 
-        imageView.setDrawingCacheEnabled(true);
-        imageView.buildDrawingCache();
-        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = mainBucket.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-                Log.d("YYY", "onSuccess: Image Uploaded");
-
-                UploadTask uploadTask = mainBucket.putBytes(data);
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        taskSnapshot.getStorage().getDownloadUrl().addOnCompleteListener(
-                                new OnCompleteListener<Uri>() {
-
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        String fileLink = task.getResult().toString();
-                                        Log.d("YYY", "onComplete: url="+fileLink);
-                                        //next work with URL
-
-                                        Product_Data product_data = new Product_Data(id, "Mouse", "Pointing Device", "750",fileLink);
-                                        myRef.setValue(product_data);
-
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-
-                            }
-                        });
-                    }
-                });
-            }
-
-        });
         return view;
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                resultUri = result.getUri();
+                pimg.setImageURI(resultUri);
+
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+    }
+
 }

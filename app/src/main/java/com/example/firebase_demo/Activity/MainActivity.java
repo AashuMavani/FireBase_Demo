@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mAuth = FirebaseAuth.getInstance();
-        Log.d("LLL", "onCreate: Who is Rgistered?  "+mAuth.getCurrentUser().getEmail());
+//        Log.d("LLL", "onCreate: Who is Rgistered?  "+mAuth.getCurrentUser().getEmail());
         btnPRegister.setOnClickListener(v -> emailRegistrtation());
         btnSignIn.setOnClickListener(v -> signInWithEmail());
         btnGetOtp.setOnClickListener(v -> getOTP());

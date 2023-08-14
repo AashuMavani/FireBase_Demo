@@ -43,4 +43,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.6.0")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
+    api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+    implementation 'com.airbnb.android:lottie:6.0.0'
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation('com.razorpay:checkout:1.6.20')
+    implementation 'com.firebaseui:firebase-ui-database:6.0.2'
 }
