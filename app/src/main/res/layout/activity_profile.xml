@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
     android:id="@+id/drawer_layout">
+
     <include layout="@layout/appbar_layout"/>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"

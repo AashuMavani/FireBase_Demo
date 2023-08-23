@@ -58,4 +58,6 @@ public class Product_Data
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
     }
+
+
 }

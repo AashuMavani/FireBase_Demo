@@ -4,12 +4,15 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.firebase_demo.Product_Data;
 import com.example.firebase_demo.R;
@@ -52,15 +55,19 @@ public class View_Product_Fragment extends Fragment {
                 bundle.putString("price",pPrice);
                 bundle.putString("des",pDes);
                 bundle.putString("img",pImg);
-
+                Log.d("GGG", "onFragmentCall: id in View Prod="+id);
 
                 fragment.setArguments(bundle);
-                FragmentManager manager
+                FragmentManager manager=getActivity().getSupportFragmentManager();
+                FragmentTransaction transaction=manager.beginTransaction();
+                transaction.replace(R.id.contentview,fragment);
+                transaction.commit();
 
             }
         });
 
         recyclerView.setAdapter(adapter);
+        Toast.makeText(getContext(), "Data Found...", Toast.LENGTH_LONG).show();
         return view;
     }
 

@@ -63,7 +63,7 @@
             android:layout_height="200dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:background="@drawable/shape"/>
+            android:background="@drawable/shape" />
         <Button
             android:id="@+id/Addbutton"
             android:layout_width="match_parent"
@@ -74,14 +74,16 @@
             android:text="ADD PRODUCT"
             android:layout_marginVertical="30dp"
             android:textSize="20dp"
-            android:textStyle="italic" />
+            android:textStyle="italic"
+            android:visibility="gone"/>
         <Button
             android:id="@+id/Updatebutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:backgroundTint="#7F5353"
-            android:text="Update Product" />
+            android:text="Update Product"
+            android:visibility="gone"/>
 
 
     </LinearLayout>

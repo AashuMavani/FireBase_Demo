@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/updateProducr"
+    <item android:id="@+id/updateProduct"
         android:title="Update Product"
         android:icon="@drawable/baseline_published_with_changes_24"/>
     <item android:id="@+id/deleteProduct"
